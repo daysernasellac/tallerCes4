@@ -1,8 +1,14 @@
-import React from 'react'
 import TodoItem from './TodoItem'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import { useEffect, useState } from 'react'
+import constants from './constants'
 
-const listMovimientos = ({ todos, setTodos, setEdit }) => {
+const ListMovimientos = ({ todos, setTodos, setEdit }) => {
+    const [movimientosList, setMovimientosList] = useState([])
+    const [typeOptions, setTypeOptions] = useState(constants.TIPOS_MOVIMIENTO)
+    const [optionSelected, setOptionSelected] = useState(
+        constants.TIPOS_MOVIMIENTO[0]
+    )
     const handleDelete = ({ id }) => {
         setTodos(todos.filter((todo) => todo.id !== id))
     }
@@ -18,6 +24,51 @@ const listMovimientos = ({ todos, setTodos, setEdit }) => {
         setTodos(newTodos)
     }
 
+    const handleFilter = (e) => {
+        const type = e.target.value
+        setOptionSelected(typeOptions.find((e) => e.name === type))
+    }
+
+    const retrieveFilters = () => {
+        return typeOptions.map((e) => (
+            <div>
+                <label for={e.name} className='mx-2 capitalize'>
+                    {e.name}
+                </label>
+                <input
+                    className='form-check-input'
+                    type='radio'
+                    name='flexRadioDefault'
+                    id={e.name}
+                    value={e.name}
+                    checked={optionSelected.name === e.name}
+                />
+            </div>
+        ))
+    }
+
+    useEffect(() => {
+        if (!todos) return
+
+        setMovimientosList(todos)
+        setOptionSelected(constants.TIPOS_MOVIMIENTO[0])
+    }, [todos])
+
+    useEffect(() => {
+        const copy = todos
+        if (movimientosList.length <= 0) return
+
+        if (optionSelected.name === constants.TIPOS_MOVIMIENTO[0].name) {
+            setMovimientosList(copy)
+            return
+        }
+
+        const filteredMovimientos = copy.filter(
+            (e) => e.tipoMovimiento === optionSelected.name
+        )
+        setMovimientosList(filteredMovimientos)
+    }, [optionSelected])
+
     return (
         <div className='justify-right w-full'>
             <div className='bg-indigo-600'>
@@ -30,7 +81,7 @@ const listMovimientos = ({ todos, setTodos, setEdit }) => {
                         </div>
                         <div className='order-3 mt-2 flex-shrink-0 w-full sm:order-2 sm:mt-0 sm:w-auto'>
                             <button className='flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-indigo-600 bg-white hover:bg-indigo-50'>
-                                {todos.length}
+                                {movimientosList.length}
                             </button>
                         </div>
                     </div>
@@ -48,36 +99,10 @@ const listMovimientos = ({ todos, setTodos, setEdit }) => {
                             placeholder='Buscar'
                             className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm'
                         />
-                        {/* <button onClick={onClear}>X</button> */}
-                        <div className='columns-3 appearance-none rounded-none relative block w-full px-3 py-2  border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm'>
-                            <div>
-                                <input
-                                    className='form-check-input'
-                                    type='radio'
-                                    name='flexRadioDefault'
-                                    id='todos'
-                                    checked
-                                />
-                                Todos
-                            </div>
-                            <div>
-                                <input
-                                    className='form-check-input'
-                                    type='radio'
-                                    name='flexRadioDefault'
-                                    id='ingreso'
-                                />
-                                Ingreso
-                            </div>
-                            <div>
-                                <input
-                                    className='form-check-input'
-                                    type='radio'
-                                    name='flexRadioDefault'
-                                    id='gasto'
-                                />
-                                Gasto
-                            </div>
+                        <div
+                            onChange={handleFilter}
+                            className='columns-3 appearance-none rounded-none relative block w-full px-3 py-2  border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm'>
+                            {retrieveFilters()}
                         </div>
                     </div>
                 </div>
@@ -92,7 +117,7 @@ const listMovimientos = ({ todos, setTodos, setEdit }) => {
                         <td className='text-lg text-gray-1000 border'>Valor</td>
                     </tr>
 
-                    {todos.map((todo) => (
+                    {movimientosList.map((todo) => (
                         <TodoItem
                             key={todo.id}
                             todo={todo}
@@ -107,4 +132,4 @@ const listMovimientos = ({ todos, setTodos, setEdit }) => {
     )
 }
 
-export default listMovimientos
+export default ListMovimientos
