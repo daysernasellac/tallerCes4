@@ -9,6 +9,7 @@ const ListMovimientos = ({ todos, setTodos, setEdit }) => {
     const [optionSelected, setOptionSelected] = useState(
         constants.TIPOS_MOVIMIENTO[0]
     )
+    const [busqueda, setBusqueda] = useState('')
     const handleDelete = ({ id }) => {
         setTodos(todos.filter((todo) => todo.id !== id))
     }
@@ -69,6 +70,21 @@ const ListMovimientos = ({ todos, setTodos, setEdit }) => {
         setMovimientosList(filteredMovimientos)
     }, [optionSelected])
 
+    useEffect(() => {
+        if (busqueda || !busqueda === '') {
+            const filteredItems = todos.filter((e) => {
+                if (e.nombre.toLowerCase().includes(busqueda.toLowerCase())) {
+                    return e
+                }
+            })
+            setMovimientosList(filteredItems)
+        } else {
+            setMovimientosList(todos)
+        }
+
+        setOptionSelected(constants.TIPOS_MOVIMIENTO[0])
+    }, [busqueda])
+
     return (
         <div className='justify-right w-full'>
             <div className='bg-indigo-600'>
@@ -92,6 +108,7 @@ const ListMovimientos = ({ todos, setTodos, setEdit }) => {
                 <div className='px-4 py-5 sm:px-6'>
                     <div className='columns-2'>
                         <input
+                            onKeyUp={(e) => setBusqueda(e.target.value)}
                             id='buscar'
                             name='buscar'
                             type='text'
