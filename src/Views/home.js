@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../Components/header'
 import Register from '../Components/register'
 import ListMovimientos from '../Components/listMovimientos'
@@ -15,33 +15,36 @@ const Home = () => {
     const handleClickSaldoInicial = (event) => {
         const newSaldoInicial = parseInt(event?.target?.value)
         if (!newSaldoInicial || newSaldoInicial < 0) return
-        const ingreso = 0
-        const gasto = 0
-        debugger
-        // Calculo de saldos
-        console.log(todos)
-
-        todos.map((todo) => ({
-            if(todo = 'Gasto') {
-                gasto = gasto + todo.inputCantidad
-            },
-            // console.log('funciona')
-        }))
-
-        // todos.map((todo) => {
-        // setsaldoFinal(newSaldoInicial + (233 - 33))
-        // if ((todo.inputTipoM = 'Gasto')) {
-        //     gasto = gasto + todo.inputCantidad
-        // } else {
-        //     ingreso = ingreso + todo.inputCantidad
-        // }
-        // })
 
         setSaldoInicial(newSaldoInicial)
-        setsaldoFinal(newSaldoInicial + (ingreso - gasto))
     }
 
-    const calcularTodo = (todos) => {}
+    const calcularSaldoFinal = (saldoInicial, totalGastos, totalIngresos) => {
+        const total = saldoInicial + totalIngresos - totalGastos
+        return total > 0 ? total : 0
+    }
+
+    const retrieveTotal = (type) => {
+        if (todos.length <= 0) return 0
+        let total = 0
+        todos.forEach((e) => {
+            if (e.tipoMovimiento === type) {
+                total += parseInt(e.cantidad)
+            }
+        })
+
+        return total
+    }
+
+    useEffect(() => {
+        const totalGastos = retrieveTotal('gasto')
+        const totalIngresos = retrieveTotal('ingreso')
+
+        setsaldoFinal(
+            calcularSaldoFinal(saldoInicial, totalGastos, totalIngresos)
+        )
+    }, [todos, saldoInicial])
+
     return (
         <div className='text-3xl font-bold w-screen h-screen'>
             <Header
@@ -63,6 +66,7 @@ const Home = () => {
                         edit={edit}
                         setEdit={setEdit}
                         saldoFinal={saldoFinal}
+                        saldoInicial={saldoInicial}
                     />
                     <ListMovimientos
                         todos={todos}

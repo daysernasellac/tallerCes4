@@ -15,6 +15,8 @@ const Register = ({
     edit,
     setEdit,
     saldoFinal,
+    handleCalcularTotal,
+    saldoInicial,
 }) => {
     const [showGasto, setShowGasto] = useState(false)
     const [showSucess, setShowSucess] = useState(false)
@@ -25,7 +27,6 @@ const Register = ({
 
     const registrar = (e) => {
         e.preventDefault()
-        console.log(edit)
 
         if (inputTipoM === 'ingreso' || saldoFinal >= inputCantidad) {
             if (edit) {
@@ -55,6 +56,7 @@ const Register = ({
             setShowGasto(true)
         }
     }
+
     const updateTodo = (id, tipoMovimiento, nombre, cantidad, completed) => {
         const newTodos = todos.map((todo) =>
             todo.id === id
