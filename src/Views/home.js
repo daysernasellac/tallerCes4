@@ -21,12 +21,14 @@ const Home = () => {
 
     const calcularSaldoFinal = (saldoInicial, totalGastos, totalIngresos) => {
         const total = saldoInicial + totalIngresos - totalGastos
-        return total > 0 ? total : 0
+        return total
     }
 
     const retrieveTotal = (type) => {
         if (todos.length <= 0) return 0
+
         let total = 0
+
         todos.forEach((e) => {
             if (e.tipoMovimiento === type) {
                 total += parseInt(e.cantidad)
